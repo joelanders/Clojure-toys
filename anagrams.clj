@@ -32,3 +32,25 @@
 
 ; number of words with at least one anagram
 (apply + (filter #(>= % 2) anacounts))
+
+; all the combinations of a collection.
+; e.g. (1 2 3) -> #{(1 2 3) (2 3) (1 3) (1 2) (1) (2) (3)}
+(defn combinations [things]
+    (into #{}
+        (if (= 1 (count things))
+            (list things)
+            (conj (mapcat combinations
+                    (for [x things]
+                         (remove #(= x %) things)))
+                  (seq things)))))
+
+; all the string combinations of a string
+; e.g "joe" -> ("joe" "oe" "je" "jo" "j" "o" "e")
+(defn str-combs [letters]
+    (map #(apply str %) (combinations letters)))
+
+; all the words (of min-length) that can be spelled
+; with the given letters.
+(defn spell-with [letters min-length]
+    (remove #(or (nil? %) (< (count %) min-length))
+            (mapcat find-anas (str-combs letters))))
