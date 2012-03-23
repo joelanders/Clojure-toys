@@ -33,6 +33,11 @@
 ; number of words with at least one anagram
 (apply + (filter #(>= % 2) anacounts))
 
+; remove just the first instance of something in a seq
+(defn remove-first [x orig]
+    (let [[half1 half2] (split-with #(not= x %) orig)]
+        (concat half1 (rest half2))))
+
 ; all the combinations of a collection.
 ; e.g. (1 2 3) -> #{(1 2 3) (2 3) (1 3) (1 2) (1) (2) (3)}
 (defn combinations [things]
@@ -41,7 +46,7 @@
             (list things)
             (conj (mapcat combinations
                     (for [x things]
-                         (remove #(= x %) things)))
+                         (remove-first x things)))
                   (seq things)))))
 
 ; all the string combinations of a string
