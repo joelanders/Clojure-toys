@@ -139,16 +139,6 @@
 (defn next-boards [start ends board]
   (map #(move-piece start % board) ends))
 
-; Takes a position and a board, returns
-; all of the boards that result from
-; the piece at that position making a
-; legal capture.
-(defn after-captures [start board]
-  (next-boards start
-               (captures start board)
-               board))
-
-
 ; Takes the position of a piece, a board,
 ; returns a list of positions which
 ; the piece can capture.
@@ -163,6 +153,15 @@
     (remove nil?
       (map #(if (not= :o (board %)) % nil)
           (moves pos board)))))
+
+; Takes a position and a board, returns
+; all of the boards that result from
+; the piece at that position making a
+; legal capture.
+(defn after-captures [start board]
+  (next-boards start
+               (captures start board)
+               board))
 
 ; Takes a board and returns all of the
 ; boards after any piece makes a capture.
