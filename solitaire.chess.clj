@@ -2,9 +2,11 @@
 (use '[clojure.string :only (join)])
 
 ; pawn, rook, knight, bishop, queen, king
+
 (def pieces '(:p :r :n :b :q :k))
 
 ; Uses :o to mark an empty square.
+
 (defn make-square-board [n]
   (zipmap (for [x (range n), y (range n)] [x y])
           (cycle [:o])))
@@ -21,6 +23,7 @@
                   (remove-piece start board))))
 
 ; pieces looks like '((:k [0 0]) (:q [0 1]))
+
 (defn populate-board [pieces board]
   (if (empty? pieces)
     board
@@ -31,6 +34,7 @@
 
 ; This doesn't check if two pieces
 ; end up on the same square.
+
 (defn random-pieces [num-pieces board-size]
   (if (= 0 num-pieces)
     '()
@@ -46,6 +50,7 @@
     (make-square-board board-size)))
 
 ; Returns the pieces list, eg. '((:k [0 0]) (:q [0 1]))
+
 (defn pieces-on-board [board]
   (let [size (+ 1 (apply max (flatten (keys board))))]
     (remove nil?
@@ -54,7 +59,11 @@
           (list (board [x y]) [x y])
           nil)))))
 
+(defn count-pieces [board]
+  (count (pieces-on-board board)))
+
 ; Returns the positions list.
+
 (defn occupied-positions [board]
   (let [size (+ 1 (apply max (flatten (keys board))))]
     (remove nil?
@@ -96,6 +105,7 @@
         [(+ x dx) (+ y dy)]))))
 
 ; Only the forward-diagonal attacking moves
+
 (defn pawn-moves [[x y] board]
   (remove nil?
     (map #(if (board %) % nil)
@@ -136,12 +146,14 @@
 ; list of end positions, returns a list
 ; of boards with the piece at the start
 ; position moved to each of the end positions.
+
 (defn next-boards [start ends board]
   (map #(move-piece start % board) ends))
 
 ; Takes the position of a piece, a board,
 ; returns a list of positions which
 ; the piece can capture.
+
 (defn captures [pos board]
   (let [moves (case (board pos)
                 :p pawn-moves
@@ -158,6 +170,7 @@
 ; all of the boards that result from
 ; the piece at that position making a
 ; legal capture.
+
 (defn after-captures [start board]
   (next-boards start
                (captures start board)
@@ -183,3 +196,20 @@
 (defn print-boards [boards]
   (map #(do (print-board %) (println))
        boards))
+
+; Solve a board all the way, printing
+; the number of boards in the list at
+; each step.
+
+(defn solve [board]
+  (loop [boards (list board)]
+    (if (or (empty? boards)
+            (> 1 (count-pieces (first boards))))
+      (println "done")
+      (do
+        (println (apply str (concat
+                              (str (count boards))
+                              " boards, each with "
+                              (str (count-pieces (first boards)))
+                              " pieces")))
+        (recur (step-list boards))))))
